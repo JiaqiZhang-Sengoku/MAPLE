@@ -120,4 +120,4 @@ The project is under [MIT License](./LICENSE), and is for research purpose ONLY.
 
 ## 🎈 **Acknowledgements**
 
-Our implementation is built upon [MSE-Adapter](https://github.com/lishuaitong16/MSE-Adapter). We thank the authors for their excellent work.
+Our implementation is built upon [MSE-Adapter](https://github.com/AZYoung233/MSE-Adapter). We thank the authors for their excellent work.
