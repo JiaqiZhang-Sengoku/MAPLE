@@ -1,0 +1,16 @@
+# Core
+torch>=2.4
+numpy>=1.24,<2
+
+# MSE-Adapter integration
+transformers==4.36.1
+modelscope>=1.9
+pandas>=1.5
+scipy>=1.10
+scikit-learn>=1.2
+tqdm>=4.65
+einops>=0.7
+addict>=2.4
+sentencepiece>=0.1.99
+tiktoken>=0.5
+transformers-stream-generator==0.0.4

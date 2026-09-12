@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maple-editing"
+version = "0.1.0"
+description = "Measurement-Aligned Pseudo-token Local Editing with cached decoder gradients"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = ["numpy>=1.24", "torch>=2.4"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+mse = ["transformers==4.36.1", "numpy<2", "pandas>=1.5", "scipy>=1.10",
+       "scikit-learn>=1.2", "tqdm>=4.65", "einops>=0.7", "addict>=2.4",
+       "sentencepiece>=0.1.99", "tiktoken>=0.5", "transformers-stream-generator==0.0.4",
+       "modelscope>=1.9"]
+
+[project.scripts]
+maple = "maple.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

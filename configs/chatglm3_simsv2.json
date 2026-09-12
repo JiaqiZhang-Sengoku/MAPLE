@@ -1,0 +1,39 @@
+{
+  "dataset": "simsv2",
+  "backbone": "chatglm3",
+  "anchors": {
+    "lower": -1,
+    "upper": 1,
+    "count": 21,
+    "decimals": 1,
+    "positive_sign": false
+  },
+  "editing": {
+    "radii": [
+      0,
+      0.5,
+      1,
+      2,
+      4
+    ],
+    "energy": 0,
+    "margin": 0.04,
+    "same_sign": false,
+    "target_width": 0.2,
+    "adaptive_width": true,
+    "probability_floor": 1e-8,
+    "norm_epsilon": 1e-8
+  },
+  "meter": {
+    "kind": "laplace",
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "epochs": 60,
+    "patience": 10,
+    "batch_size": 256
+  },
+  "calibration": {
+    "reuse": "shared",
+    "source_seed": 1111
+  }
+}
