@@ -35,7 +35,7 @@ Obtain the [MSE-Adapter](https://github.com/lishuaitong16/MSE-Adapter) source, p
 | Backbone | MSE-Adapter subproject | SIMS-V2 config | CMU-MOSEI config |
 |---|---|---|---|
 | Qwen-1.8B | `MSE-Qwen-1.8B` | `configs/qwen_simsv2.json` | `configs/qwen_mosei.json` |
-| ChatGLM3-6B-Base | `MSE-ChatGLM3-6B` | `configs/chatglm3_simsv2.json` | `configs/chatglm3_mosei.json` |
+| ChatGLM3-6B | `MSE-ChatGLM3-6B` | `configs/chatglm3_simsv2.json` | `configs/chatglm3_mosei.json` |
 | LLaMA2-7B | `MSE-Llama2-7B` | `configs/llama2_simsv2.json` | `configs/llama2_mosei.json` |
 
 Pass their root through `--data-root`, the language-model directory through `--llm-path`, and the adapter checkpoint through `--adapter-checkpoint`. Keep model weights, tokenizer, prompts, and upstream source consistent across stages.
