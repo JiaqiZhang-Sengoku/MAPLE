@@ -200,7 +200,7 @@ def test_meter_backward():
 
 
 def test_backbone_dataset_profiles():
-    folder = Path(__file__).resolve().parents[1] / "configs"
+    folder = Path(__file__).resolve().parents[1]
     profiles = [load_config(path) for path in sorted(folder.glob("*.json"))]
     assert len(profiles) == 6
     for config, anchors, editing in profiles:

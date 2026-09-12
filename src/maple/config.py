@@ -7,8 +7,26 @@ from .anchors import AnchorSpec
 from .core import EditConfig
 
 
+_LEGACY_CONFIG_NAMES = {
+    "chatglm3_mosei.json": "ChatGLM3-6B_CMU-MOSEI.json",
+    "chatglm3_simsv2.json": "ChatGLM3-6B_SIMS-V2.json",
+    "llama2_mosei.json": "Llama2-7B_CMU-MOSEI.json",
+    "llama2_simsv2.json": "Llama2-7B_SIMS-V2.json",
+    "qwen_mosei.json": "Qwen-1.8B_CMU-MOSEI.json",
+    "qwen_simsv2.json": "Qwen-1.8B_SIMS-V2.json",
+}
+
+
 def load_config(path):
-    config = json.loads(Path(path).read_text(encoding="utf8"))
+    path = Path(path)
+    # Keep previously published commands working after moving the bundled profiles.
+    if not path.exists() and path.parent.name == "configs":
+        renamed = _LEGACY_CONFIG_NAMES.get(path.name)
+        if renamed is not None:
+            replacement = path.parent.parent / renamed
+            if replacement.is_file():
+                path = replacement
+    config = json.loads(path.read_text(encoding="utf8"))
     if config["dataset"] not in ("simsv2", "mosei"):
         raise ValueError("Unsupported dataset")
     if config["backbone"] not in ("qwen", "chatglm3", "llama2"):

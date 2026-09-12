@@ -15,7 +15,48 @@ from maple.backends import mse
 from maple.config import load_config
 
 
-CONFIGS = Path(__file__).resolve().parents[1] / "configs"
+ROOT = Path(__file__).resolve().parents[1]
+BACKBONE_NAMES = {"qwen": "Qwen-1.8B", "chatglm3": "ChatGLM3-6B", "llama2": "Llama2-7B"}
+
+
+@pytest.mark.parametrize("backbone", BACKBONE_NAMES)
+@pytest.mark.parametrize("dataset,label", [("mosei", "CMU-MOSEI"), ("simsv2", "SIMS-V2")])
+def test_renamed_configs_accept_published_paths(backbone, dataset, label):
+    current = ROOT / f"{BACKBONE_NAMES[backbone]}_{label}.json"
+    previous = ROOT / "configs" / f"{backbone}_{dataset}.json"
+    assert current.is_file()
+    assert not previous.exists()
+    assert load_config(current) == load_config(previous)
+
+
+def test_config_fallback_is_relative_to_requested_project(monkeypatch, tmp_path):
+    path = tmp_path / "Qwen-1.8B_SIMS-V2.json"
+    path.write_text((ROOT / path.name).read_text(encoding="utf8"), encoding="utf8")
+    monkeypatch.chdir(tmp_path)
+    assert load_config("configs/qwen_simsv2.json") == load_config(path)
+    with pytest.raises(FileNotFoundError):
+        load_config(tmp_path / "another-project" / "configs" / "qwen_simsv2.json")
+
+
+def test_existing_config_path_takes_precedence(tmp_path):
+    config, _, _ = load_config(ROOT / "Qwen-1.8B_SIMS-V2.json")
+    (tmp_path / "Qwen-1.8B_SIMS-V2.json").write_text(json.dumps(config), encoding="utf8")
+    previous = tmp_path / "configs" / "qwen_simsv2.json"
+    previous.parent.mkdir()
+    config["meter"]["batch_size"] = 7
+    previous.write_text(json.dumps(config), encoding="utf8")
+    assert load_config(previous)[0]["meter"]["batch_size"] == 7
+
+
+@pytest.mark.parametrize("requested", [
+    "configs/unknown.json", "other/qwen_simsv2.json", "qwen_simsv2.json",
+    "configs/qwen_mosei.json",
+])
+def test_missing_config_paths_still_fail(tmp_path, requested):
+    path = tmp_path / "Qwen-1.8B_SIMS-V2.json"
+    path.write_text((ROOT / path.name).read_text(encoding="utf8"), encoding="utf8")
+    with pytest.raises(FileNotFoundError):
+        load_config(tmp_path / requested)
 
 
 @pytest.mark.parametrize("backbone,override,expected", [
@@ -39,7 +80,7 @@ def test_cli_training_batch_size(monkeypatch, tmp_path, backbone, override, expe
     monkeypatch.setattr(cli, "load_mse", load)
     monkeypatch.setattr(cli, "train_meter", train)
     monkeypatch.setattr(cli, "file_hash", lambda path: "adapter")
-    argv = ["maple", "train-meter", "--config", str(CONFIGS / f"{backbone}_simsv2.json"),
+    argv = ["maple", "train-meter", "--config", str(ROOT / f"{BACKBONE_NAMES[backbone]}_SIMS-V2.json"),
             "--project-dir", "upstream", "--llm-path", "llm", "--adapter-checkpoint", "adapter.pt",
             "--data-root", "data", "--output-dir", str(tmp_path / "run"), "--device", "cpu"]
     if override is not None:
@@ -87,7 +128,7 @@ def test_shared_geometry_policy_is_explicit_and_checks_source_seed():
 
 @pytest.mark.parametrize("backbone", ["qwen", "chatglm3", "llama2"])
 def test_published_calibration_policies_and_default(tmp_path, backbone):
-    config, _, _ = load_config(CONFIGS / f"{backbone}_simsv2.json")
+    config, _, _ = load_config(ROOT / f"{BACKBONE_NAMES[backbone]}_SIMS-V2.json")
     expected = {"reuse": "per_adapter_seed"} if backbone == "qwen" else {"reuse": "shared", "source_seed": 1111}
     assert config["calibration"] == expected
     assert "historical_calibration" not in config
@@ -102,7 +143,7 @@ def test_published_calibration_policies_and_default(tmp_path, backbone):
     {"reuse": "per_adapter_seed", "source_seed": 1111},
 ])
 def test_qwen_rejects_invalid_reuse_policy(tmp_path, policy):
-    config, _, _ = load_config(CONFIGS / "qwen_simsv2.json")
+    config, _, _ = load_config(ROOT / "Qwen-1.8B_SIMS-V2.json")
     config["calibration"] = policy
     path = tmp_path / "config.json"
     path.write_text(json.dumps(config))
@@ -123,7 +164,7 @@ def test_shared_policy_does_not_restrict_new_calibration_seed(monkeypatch, tmp_p
     monkeypatch.setattr(cli, "calibrate", calibrate)
     monkeypatch.setattr(cli, "file_hash", lambda path: "adapter")
     monkeypatch.setattr("sys.argv", [
-        "maple", "calibrate", "--config", str(CONFIGS / "llama2_simsv2.json"),
+        "maple", "calibrate", "--config", str(ROOT / "Llama2-7B_SIMS-V2.json"),
         "--project-dir", "upstream", "--llm-path", "llm", "--adapter-checkpoint", "adapter.pt",
         "--data-root", "data", "--output-dir", str(tmp_path / "run"),
         "--device", "cpu", "--seed", "3333", "--samples", "1"])
