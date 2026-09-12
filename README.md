@@ -79,23 +79,6 @@ maple evaluate --config configs/qwen_simsv2.json \
   --output-dir runs/qwen_simsv2/1111/valid
 ```
 
-### 4. Configuration
-
-| Setting | Meaning |
-|---|---|
-| `radii` | Editing radii, beginning at zero and strictly increasing |
-| `energy` | Weight of the L2 edit-norm penalty |
-| `margin` | Minimum reduction in disagreement with the estimate required to accept an edit |
-| `same_sign` | Restrict candidates to the finite original prediction's `value > 0` group |
-| `target_width` | Fixed target width and lower bound on the effective Laplace scale |
-| `adaptive_width` | Use the effective Laplace scale as the target width |
-
-Qwen uses a readout-token estimator; ChatGLM and LLaMA use a Laplace estimator over cached hidden states. Qwen's `meter.batch_size` controls training input batches. For Laplace estimators, it controls cached-state training batches. `--input-batch-size` overrides the external input loader size. During editing, the estimate location is clipped to the anchor range, and the effective Laplace scale is used for candidate risk.
-
-Qwen requires calibration geometry from the same adapter checkpoint and seed. The supplied ChatGLM/LLaMA profiles share geometry from seed `1111`, while each estimator must match the evaluated adapter and seed. To calibrate these adapters independently, set `calibration` to `{"reuse": "per_adapter_seed"}` and remove `source_seed`.
-
-SIMS-V2 uses 21 anchors over `[-1,1]`; CMU-MOSEI uses 61 over `[-3,3]`. Qwen prefixes nonnegative anchor strings with `+`; the other profiles do not. Anchor scores sum numerical-token log-probabilities without EOS or length normalization.
-
 ## 📏 Evaluation & Outputs
 
 | Metric | Description |
