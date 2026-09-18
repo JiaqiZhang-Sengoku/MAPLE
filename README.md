@@ -115,6 +115,11 @@ python -m pip install -e ".[test]"
 python -m pytest -q
 ```
 
+## 📝 References
+
+If you find the code useful for your research, please consider citing:
+
+
 ## 📢 LICENSE
 
 The project is under [MIT License](./LICENSE), and is for research purpose ONLY.
