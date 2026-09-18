@@ -12,7 +12,9 @@ Multimodal sentiment analysis (MSA) aims to infer human affect from complementar
 
 ## 🎇 Method Overview
 
-
+<p align="center">
+  <img width="1200" alt="MAPLE Architecture" src="./Figures/Method.png">
+</p>
 
 ## 🚀 Installation & Usage
 
